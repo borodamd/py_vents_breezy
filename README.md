@@ -1,6 +1,7 @@
 # Vents_Breezy
 
-Python3 library for single-room energy recovery ventilators from Vents / Blauberg / Flexit /Vents
+Python3 library for single-room energy recovery ventilators from 
+Vents / Blauberg / Flexit /Vents
 Remaked from PyEcoventv2 by https://github.com/gody01/pyEcoventV2
 
 
@@ -8,7 +9,7 @@ Remaked from PyEcoventv2 by https://github.com/gody01/pyEcoventV2
 	pip3 install vents_breezy
 
 ## Example usage
-	from ecovent import Fan
+	from vents_breezy import Fan
 	""" Create a new fan with IP Address """
 	""" The Fan object takes 'host', 'name', 'port' as arguments """
 	""" 'host' (IP address) is the only mandatory argument """
@@ -47,7 +48,7 @@ Remaked from PyEcoventv2 by https://github.com/gody01/pyEcoventV2
 	print(fan.airflow)
 
 ## Intended usage
-The intended usage of this library is to include ventilation fans from Vents / Blauberg / Flexit in <https://www.home-assistant.io/>
+The intended usage of this library is to include ventilation fans from Vents / Blauberg / Flexit / Vents in <https://www.home-assistant.io/>
 
 ## Tested fans 
 This library has only been tested on the following fans:
