@@ -1,9 +1,7 @@
 """ Version  """
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
-"""Library to handle communication with Wifi ecofan from TwinFresh / Blauberg / Vents"""
-""" Remaked from pyEcoventV2 by gody01 - https://github.com/gody01/pyEcoventV2 """
-
+"""Library to handle communication with Wifi ecofan from TwinFresh / Blauberg"""
 import socket
 import sys
 import time
@@ -11,7 +9,7 @@ import math
 
 class Fan(object):
     """Class to communicate with the ecofan"""
-
+    
     HEADER = f'FDFD'
 
     func = {
@@ -22,6 +20,7 @@ class Fan(object):
         'dec': "05",
         'resp': "06"
     }
+
     states = {
         0: 'off',
         1: 'on' ,
@@ -30,49 +29,47 @@ class Fan(object):
 
     speeds = {
          0: 'standby',
-         1: 'low',
-         2: 'medium',
-         3: 'high',
+         1: 'low', 
+         2: 'medium', 
+         3: 'high', 
          0xff: 'manual'
     }
 
     timer_modes = {
-        0: 'off',
-        1: 'night',
-        2: 'party'
+        0: 'off', 
+        1: 'night', 
+        2: 'party' 
     }
 
     statuses = {
-        0: 'off',
-        1: 'on'
+        0: 'off', 
+        1: 'on' 
     }
-
+    
     boost_statuses = {
-        0: 'off',
+        0: 'off', 
         1: 'on',
         2: 'delay'
-    }
+    }    
 
     heater_statuses = {
         0: 'off',
         1: 'on'
     }
 
-
-
-
     airflows = {
-        1: 'heat_recovery',
+        0: 'ventilation',
+        1: 'heat_recovery', 
         2: 'air_supply',
-        3: 'ventilation'
-    }
+        3: 'something' 
+    } 
 
     alarms = {
-        0: 'no',
-        1: 'alarm',
-        2: 'warning'
+        0: 'no', 
+        1: 'alarm', 
+        2: 'warning' 
     }
-
+    
     days_of_week = {
         0: 'all days',
         1: 'Monday',
@@ -84,50 +81,52 @@ class Fan(object):
         7: 'Sunday',
         8: 'Mon-Fri',
         9: 'Sat-Sun',
-    }
+    }  
 
     filters = {
-        0: 'filter replacement not required' ,
-        1: 'replace filter'
+        0: 'filter replacement not required' , 
+        1: 'replace filter' 
+    }
+    
+    unit_types = {
+                    0x0300: 'Vento Expert A50-1/A85-1/A100-1 W V.2', 
+                    0x0400: 'Vento Expert Duo A30-1 W V.2', 
+                    0x0500: 'Vento Expert A30 W V.2', 
+                    0x1100: 'Vents Breezy 160-E' 
     }
 
-    unit_types = {
-                    0x0300: 'Vento Expert A50-1/A85-1/A100-1 W V.2',
-                    0x0400: 'Vento Expert Duo A30-1 W V.2',
-                    0x0500: 'Vento Expert A30 W V.2',
-                    0x1100: 'Vents Breezy 160-E' }
     wifi_operation_modes = {
         1: 'client' ,
-        2: 'ap'
+        2: 'ap' 
     }
 
-    wifi_enc_types =  {
-            48: 'Open',
-            50: 'wpa-psk' ,
-            51: 'wpa2_psk',
-            52: 'wpa_wpa2_psk'
-    }
+    wifi_enc_types =  {  
+            48: 'Open', 
+            50: 'wpa-psk' , 
+            51: 'wpa2_psk',  
+            52: 'wpa_wpa2_psk' 
+    } 
 
     wifi_dhcps = {
-        0: 'STATIC',
-        1: 'DHCP',
-        2: 'Invert'
+        0: 'STATIC', 
+        1: 'DHCP', 
+        2: 'Invert' 
     }
-
+    
     params = {
         0x0001: [ 'state', states ],
         0x0002: [ 'speed', speeds ],
         0x0006: [ 'boost_status', statuses ],
         0x0007: [ 'timer_mode', timer_modes ],
         0x000b: [ 'timer_counter', None ],
-#        0x000f: [ 'humidity_sensor_state', states ],
+        0x000f: [ 'humidity_sensor_state', states ],
         0x0014: [ 'relay_sensor_state', states ],
-#        0x0016: [ 'analogV_sensor_state', states ],
-#        0x0019: [ 'humidity_treshold', None ],
+        0x0016: [ 'analogV_sensor_state', states ],
+        0x0019: [ 'humidity_treshold', None ],
         0x0024: [ 'battery_voltage', None ],
-#        0x0025: [ 'humidity', None ],
-#        0x002d: [ 'analogV', None ],
-#        0x0032: [ 'relay_status', statuses ],
+        0x0025: [ 'humidity', None ],
+        0x002d: [ 'analogV', None ],
+        0x0032: [ 'relay_status', statuses ],
         0x0044: [ 'man_speed', None ],
         0x004a: [ 'fan1_speed', None ],
         0x004b: [ 'fan2_speed', None ],
@@ -145,23 +144,22 @@ class Fan(object):
         0x0088: [ 'filter_replacement_status', statuses ],
         0x00a3: [ 'curent_wifi_ip', None ],
         0x00b7: [ 'airflow' , airflows ],
-#        0x00b8: [ 'analogV_treshold', None ],
+        0x00b8: [ 'analogV_treshold', None ],
         0x00b9: [ 'unit_type', unit_types ],
         0x0302: [ 'night_mode_timer', None ],
         0x0303: [ 'party_mode_timer', None ],
-#        0x0304: [ 'humidity_status', statuses ],
-#        0x0305: [ 'analogV_status', statuses ],
-   }
-
-    write_only_params = {
+        0x0304: [ 'humidity_status', statuses ],
+        0x0305: [ 'analogV_status', statuses ],
+        0x0306: [ 'beeper', statuses ],
+        # Write only parameters
         0x0065: [ 'filter_timer_reset', None ],		# WRITE ONLY
         0x0072: [ 'weekly_schedule_state', states ],
         0x0077: [ 'weekly_schedule_setup', None ],
-        0x0080: [ 'reset_alarms', None ],	# WRITE ONLY        
-        0x0087: [ 'factory_reset', None ],
-        0x00a0: [ 'wifi_apply_and_quit', None ],
-        0x00a2: [ 'wifi_discard_and_quit', None ],
-        0x0094: [ 'wifi_operation_mode', wifi_operation_modes  ],
+        0x0080: [ 'reset_alarms', None ],	# WRITE ONLY
+#        0x0087: [ 'factory_reset', None ],
+#        0x00a0: [ 'wifi_apply_and_quit', None ],
+#        0x00a2: [ 'wifi_discard_and_quit', None ],
+        0x0094: [ 'wifi_operation_mode', wifi_operation_modes ],
         0x0095: [ 'wifi_name' , None ],
         0x0096: [ 'wifi_pasword', None ],
         0x0099: [ 'wifi_enc_type', wifi_enc_types ],
@@ -169,7 +167,7 @@ class Fan(object):
         0x009b: [ 'wifi_dhcp', wifi_dhcps  ],
         0x009c: [ 'wifi_assigned_ip', None ],
         0x009d: [ 'wifi_assigned_netmask', None ],
-        0x009e: [ 'wifi_main_gateway', None ],        
+        0x009e: [ 'wifi_main_gateway', None ],
     }
 
     _name = None
@@ -183,14 +181,14 @@ class Fan(object):
     _heater_status = None
     _timer_mode = None
     _timer_counter = None
- #   _humidity_sensor_state = None
+    _humidity_sensor_state = None
     _relay_sensor_state = None
     _analogV_sensor_state = None
- #   _humidity_treshold = None
+    _humidity_treshold = None
     _battery_voltage = 0
- #   _humidity = None
- #   _analogV = None
- #   _relay_status = None
+    _humidity = None
+    _analogV = None
+    _relay_status = None
     _man_speed = None
     _fan1_speed = None
     _fan2_speed = None
@@ -218,12 +216,13 @@ class Fan(object):
     _wifi_main_gateway = None
     _curent_wifi_ip = None
     _airflow = None
- #   _analogV_treshold = None
+    _analogV_treshold = None
     _unit_type = None
     _night_mode_timer = None
     _party_mode_timer = None
- #   _humidity_status = None
- #   _analogV_status = None
+    _humidity_status = None
+    _analogV_status = None
+    _beeper = None
 
     def __init__(self, host, password="1111", fan_id="DEFAULT_DEVICEID", name="ecofanv2", port=4000 ):
         self._name = name
@@ -233,7 +232,7 @@ class Fan(object):
         self._id = fan_id
         self._pwd_size = 0
         self._password = password
-
+        
     def init_device (self):
         if self._id == "DEFAULT_DEVICEID":
             self.get_param( 'device_search' )
@@ -284,19 +283,18 @@ class Fan(object):
 
     def str2hex(self,str_msg):
         return "".join("{:02x}".format(ord(c)) for c in str_msg)
-
+        
     def hex2str(self,hex_msg):
         return "".join( chr(int("0x" + hex_msg[i:(i+2)],16)) for i in range(0,len(hex_msg),2))
 
     def hexstr2tuple(self,hex_msg):
         return [int(hex_msg[i:(i+2)], 16) for i in range(0,len(hex_msg), 2)]
-
+        
     def chksum(self,hex_msg):
         checksum = hex(sum(self.hexstr2tuple(hex_msg))).replace("0x","").zfill(4)
         byte_array = bytearray.fromhex(checksum)
         chksum = hex(byte_array[1]).replace("0x","").zfill(2) + hex(byte_array[0]).replace("0x","").zfill(2)
         return f"{chksum}"
-#    print ( "CheckSum Is ", chksum)
 
     def get_size(self,str):
         return hex(len(str)).replace("0x","").zfill(2)
@@ -313,8 +311,9 @@ class Fan(object):
         for i in ( self.params ):
             if self.params[i][0] == value:
                 return i
-
+                
     def get_params_values(self, idx, value ):
+        # print ( "EcoventV2: " + idx,  file = sys.stderr )
         index = self.get_params_index(idx)
         if index != None:
             if self.params[index][1] != None:
@@ -326,13 +325,11 @@ class Fan(object):
             return [ None, None ]
 
     def send(self, data):
+        # print ( "EcoventV2: " + data , file = sys.stderr )
         try:
             self.socket = self.connect()
             payload = self.get_header() + data
             payload = self.HEADER + payload + self.chksum(payload)
-#            print (self.HEADER + payload + "CheckSum is ", self.chksum(payload))
-##            print (payload)
-##            print ("CheckSum is ",self.chksum(payload))
             response = self.socket.sendall( bytes.fromhex(payload))
             return response
         except socket.timeout:
@@ -371,7 +368,6 @@ class Fan(object):
             if out == "0077":
                 value = ""
         data = func + parameter
-        # print (data)
         response = False
         i = 0
         while not response:
@@ -382,7 +378,7 @@ class Fan(object):
                 self.parse_response(response)
                 return True
             if i >= 10:
-                print ("EcoventV2: Timeout device: " + self._host + " bail out after " + str(i) + " retries" , file = sys.stderr )
+                # print ("EcoventV2: Timeout device: " + self._host + " bail out after " + str(i) + " retries" , file = sys.stderr )
                 return False
             # time.sleep(0.1)
 
@@ -394,17 +390,19 @@ class Fan(object):
 
     def set_param ( self, param, value ):
         valpar = self.get_params_values (param, value)
+        # print ( "EcoventV2: " + " " + param + "/" + value , file = sys.stderr )
         if valpar[0] !=  None:
             if valpar[1] != None:
                 self.do_func( self.func['write_return'], hex(valpar[0]).replace("0x","").zfill(4), hex(valpar[1]).replace("0x","").zfill(2) )
             else:
                 self.do_func( self.func['write_return'], hex(valpar[0]).replace("0x","").zfill(4), value )
-
+                
+                
     def get_param ( self, param ):
         idx = self.get_params_index (param)
         if idx !=  None:
                 self.do_func( self.func['read'], hex(idx).replace("0x","").zfill(4) )
-
+            
     def set_state_on(self):
         request = "0001";
         value = "01" ;
@@ -444,13 +442,13 @@ class Fan(object):
             self.do_func ( self.func['write_return'], request, value )
 
     def set_airflow(self, val):
-        if val >= 1 and val <= 3:
+        if val >= 0 and val <= 2:
             request = "00b7"
             value = hex(val).replace("0x","").zfill(2)
             self.do_func ( self.func['write_return'], request, value )
 
     def parse_response(self,data):
-        pointer = 20 ; # discard header bytes 
+        pointer = 20 ; # discard header bytes
         length = len(data) - 2 ;
         pwd_size = data[pointer] 
         pointer += 1
@@ -465,7 +463,6 @@ class Fan(object):
         value_counter = 1
         high_byte_value = 0
         parameter = 1 ;
-
         for p in payload:
             if parameter and p == 0xff:
                 ext_function = 0xff
@@ -528,7 +525,7 @@ class Fan(object):
     @id.setter
     def id(self, id):
         self._id = id
-
+        
     @property
     def password(self):
         return self._password
@@ -561,7 +558,7 @@ class Fan(object):
     def speed(self, input):
         val = int (input, 16 )
         self._speed = self.speeds[val]
-
+        
     @property
     def boost_status(self):
         return self._boost_status
@@ -570,6 +567,15 @@ class Fan(object):
     def boost_status(self, input):
         val = int (input, 16 )
         self._boost_status = self.boost_statuses[val]
+
+    @property
+    def heater_status(self):
+        return self._heater_status
+
+    @heater_status.setter
+    def heater_status(self, input):
+        val = int (input, 16 )
+        self._heater_status = self.heater_statuses[val]
 
     @property
     def timer_mode(self):
@@ -661,21 +667,6 @@ class Fan(object):
         val = int (input, 16 )
         self._relay_status = self.statuses[val]
 
-
-    @property
-    def heater_status(self):
-        return self._heater_status
-
-    @heater_status.setter
-    def heater_status(self, input):
-        val = int (input, 16 )
-        self._heater_status = self.heater_statuses[val]
-
-#    @heater_status.setter
-#    def heater_status(self, val):
-#        self._heater_status = self.heater_statuses[int(val)]
-
-
     @property
     def man_speed(self):
         return self._man_speed
@@ -708,17 +699,14 @@ class Fan(object):
     def filter_timer_countdown(self):
         return self._filter_timer_countdown
 
-#    @filter_timer_countdown.setter
-#    def filter_timer_countdown(self, input ):
-#        val = int(input,16).to_bytes(3,'big')
-#        self._filter_timer_countdown = str ( val[2] ) + "d " +str ( val[1] ) + "h " + str ( val[0] ) + "m " 
-
-
     @filter_timer_countdown.setter
     def filter_timer_countdown(self, input ):
-        val = int(input,16).to_bytes(4,'big')
-        self._filter_timer_countdown = str ( int.from_bytes(val[2:3],'big') ) + "d " + str ( val[1] ) + "h " +str ( val[0] ) + "m "		
-
+        if len(input) == 8:
+            input = input[:-2]
+        # print ( "EcoventV2: " + input , file = sys.stderr )
+        val = int(input,16).to_bytes(3,'big')
+        self._filter_timer_countdown = str ( val[2] ) + "d " + str ( val[1] ) + "h " +str ( val[0] ) + "m "
+        # self._filter_timer_countdown = str(int(input[4:6],16)) + "d " + str(int(input[2:4],16)) + "h " +str(int(input[0:2],16)) + "m "
 
     @property
     def boost_time (self):
@@ -736,7 +724,6 @@ class Fan(object):
     @rtc_time.setter
     def rtc_time(self, input ):
         val = int(input,16).to_bytes(3,'big')
-        
         self._rtc_time = str ( val[2] ) + "h " +str ( val[1] ) + "m " + str ( val[0] ) + "s " 
 
     @property
@@ -939,7 +926,7 @@ class Fan(object):
     @unit_type.setter
     def unit_type(self, input):
         val = int (input, 16 )
-        self._unit_type = self.unit_types[val]
+        self._unit_type = self.unit_types[val]        
 
     @property
     def night_mode_timer (self):
@@ -976,6 +963,15 @@ class Fan(object):
     def analogV_status(self, input):
         val = int (input, 16 )
         self._analogV_status = self.statuses[val]
+
+    @property
+    def beeper (self):
+        return self._beeper
+
+    @beeper.setter
+    def beeper(self, input):
+        val = int (input, 16 )
+        self._beeper = self.statuses[val]
 
     def reset_filter_timer(self):
         self.set_param('filter_timer_reset', "")
