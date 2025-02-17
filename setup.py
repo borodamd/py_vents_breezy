@@ -8,13 +8,13 @@ with open("README.md", 'r') as fp:
 setup(
     name = 'Vents_Breezy',
     packages = ['vents_breezy'],
-    version='0.0.1',
-    description='Python3 library for single-room energy recovery ventilators from Vents / Blauberg / Flexit / Vents',
+    version='0.0.3',
+    description='Python3 library for single-room energy recovery ventilators from Vents 160-E',
     long_description=long_description,
     python_requires='>=3.6.7',
     author='borodamd',
     author_email='mail@example.com',
-    url='https://github.com/borodamd/vents_breezy',
+    url='https://github.com/borodamd/py_vents_breezy',
     license="MIT",
     classifiers=[
         'Intended Audience :: Developers',

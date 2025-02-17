@@ -69,3 +69,5 @@ Fans from Flexit are identical and should work, but this is not yet tested:
 ## Changelog
 - v 0.0.1.
 -- initial release
+- v 0.0.3.
+-- Remove unneeded sensors for Vents Breezy 160E and added beeper and display sensors

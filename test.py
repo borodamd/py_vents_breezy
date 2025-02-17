@@ -15,7 +15,7 @@ ips =  ["192.168.124.224"]
 
 for addr in ips:
     print ( addr ) 
-    fan=Fan("192.168.124.224", "1111" , "YOURIDHERE_16_Symbols")
+    fan=Fan("192.168.124.224", "1111" , "16SYMBOLS_ID")
     if fan.init_device():
         fan.update();
         # Print out all readable parameters
